@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ismael — GitHub HQ</title>
+<style>
+  :root {
+    --bg: #080f1e;
+    --surface: rgba(255,255,255,0.05);
+    --surface-hover: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.08);
+    --border-accent: rgba(0,212,177,0.4);
+    --teal: #00d4b1;
+    --teal-dim: rgba(0,212,177,0.15);
+    --teal-glow: rgba(0,212,177,0.25);
+    --blue: #4a9eff;
+    --blue-dim: rgba(74,158,255,0.15);
+    --text: #ffffff;
+    --text-secondary: rgba(255,255,255,0.55);
+    --text-muted: rgba(255,255,255,0.3);
+    --danger: #ff5e6c;
+    --warn: #ffb347;
+    --success: #00d4b1;
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+
+  /* Background gradient orbs */
+  body::before {
+    content: '';
+    position: fixed;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,212,177,0.08) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(74,158,255,0.06) 0%, transparent 70%);
+    bottom: -100px; left: -100px;
+    pointer-events: none;
+  }
+
+  .container { max-width: 480px; margin: 0 auto; padding: 0 20px 120px; position: relative; }
+
+  /* Header */
+  .header { padding: 52px 0 24px; text-align: center; }
+  .avatar-wrap { position: relative; display: inline-block; margin-bottom: 16px; }
+  .avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, #00d4b1, #4a9eff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 600; color: #fff;
+    border: 2px solid var(--border-accent);
+    box-shadow: 0 0 30px var(--teal-glow);
+  }
+  .live-badge {
+    position: absolute; bottom: 2px; right: 2px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--teal); border: 2px solid var(--bg);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 var(--teal-glow)} 50%{box-shadow:0 0 0 6px transparent} }
+  .header-name { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+  .header-id { color: var(--teal); font-size: 12px; font-weight: 500; letter-spacing: 1px; margin: 4px 0 12px; }
+  .header-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    padding: 4px 14px; border: 1px solid var(--border);
+    border-radius: 20px; font-size: 11px; font-weight: 500;
+    color: var(--text-secondary); letter-spacing: 0.5px;
+  }
+
+  /* Stats row */
+  .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 24px 0; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 8px; text-align: center;
+  }
+  .stat-num { font-size: 20px; font-weight: 600; }
+  .stat-lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.3px; }
+
+  /* Section divider */
+  .section-head {
+    display: flex; align-items: center; gap: 10px; margin: 28px 0 14px;
+  }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+  .section-tag {
+    font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+    color: var(--text-secondary); text-transform: uppercase;
+  }
+
+  /* Repo cards */
+  .repo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px 14px;
+    margin-bottom: 12px;
+    transition: border-color .2s, background .2s;
+    cursor: pointer;
+  }
+  .repo-card:hover { border-color: var(--border-accent); background: var(--surface-hover); }
+  .repo-card.active-project { border-color: rgba(0,212,177,0.3); }
+
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+  .card-name { font-size: 15px; font-weight: 600; }
+  .card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 14px; }
+
+  .lang-badge {
+    font-size: 10px; font-weight: 600; padding: 3px 9px;
+    border-radius: 20px; letter-spacing: 0.4px;
+  }
+  .lang-ts { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(74,158,255,0.3); }
+  .lang-js { background: rgba(255,179,71,0.12); color: var(--warn); border: 1px solid rgba(255,179,71,0.3); }
+  .lang-py { background: rgba(0,212,177,0.1); color: var(--teal); border: 1px solid rgba(0,212,177,0.25); }
+  .lang-none { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); }
+
+  .card-meta { display: flex; align-items: center; gap: 14px; font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+  .meta-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .dot-green { background: var(--success); box-shadow: 0 0 6px var(--teal-glow); }
+  .dot-amber { background: var(--warn); }
+  .dot-gray { background: rgba(255,255,255,0.2); }
+
+  .card-actions { display: flex; gap: 8px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .btn {
+    flex: 1; padding: 8px 6px; border-radius: 10px;
+    font-size: 11px; font-weight: 500; text-align: center;
+    cursor: pointer; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04); color: var(--text-secondary);
+    transition: all .15s;
+  }
+  .btn:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+  .btn-primary {
+    background: var(--teal-dim); color: var(--teal);
+    border-color: rgba(0,212,177,0.35);
+  }
+  .btn-primary:hover { background: rgba(0,212,177,0.25); }
+
+  /* Alert strip */
+  .alert {
+    background: rgba(255,94,108,0.1); border: 1px solid rgba(255,94,108,0.25);
+    border-radius: var(--radius-sm); padding: 12px 16px;
+    font-size: 12px; color: rgba(255,150,157,0.9); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .alert-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--danger); flex-shrink: 0; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(8,15,30,0.9);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    padding: 12px 0 24px;
+    display: flex; justify-content: space-around; align-items: center;
+    z-index: 100;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; cursor: pointer; padding: 4px 16px;
+    color: var(--text-muted); font-size: 10px; font-weight: 500;
+  }
+  .nav-item.active { color: var(--teal); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--teal); }
+
+  /* Loading state */
+  .loading { color: var(--text-muted); font-size: 13px; text-align: center; padding: 2rem; }
+  .skeleton {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px;
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
+  .skel-line { height: 12px; background: rgba(255,255,255,0.07); border-radius: 6px; margin-bottom: 10px; }
+
+  /* Visibility pill */
+  .vis-pill {
+    font-size: 9px; padding: 2px 7px; border-radius: 20px; font-weight: 500; letter-spacing: 0.5px;
+  }
+  .vis-private { background: rgba(255,179,71,0.1); color: var(--warn); border: 1px solid rgba(255,179,71,0.2); }
+  .vis-public { background: rgba(0,212,177,0.08); color: var(--teal); border: 1px solid rgba(0,212,177,0.2); }
+</style>
+</head>
+<body>
+
+<!-- Token gate — only shown if no PAT stored -->
+<div id="token-gate" style="display:none; position:fixed; inset:0; background:#080f1e; z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:32px;">
+  <div style="max-width:380px; width:100%; text-align:center;">
+    <div style="font-size:40px; margin-bottom:16px;">🔑</div>
+    <h2 style="color:#fff; font-size:22px; margin-bottom:8px;">Connect GitHub</h2>
+    <p style="color:rgba(255,255,255,0.55); font-size:14px; margin-bottom:24px; line-height:1.5;">Enter your GitHub Personal Access Token to load your dashboard. It's saved locally in your browser — never sent anywhere except GitHub.</p>
+    <input id="pat-input" type="password" placeholder="github_pat_xxxxxxxxxxxx"
+      style="width:100%; padding:14px 16px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:12px; color:#fff; font-size:15px; outline:none; margin-bottom:12px;"
+      onkeydown="if(event.key==='Enter') saveToken(this.value)" />
+    <button onclick="saveToken(document.getElementById('pat-input').value)"
+      style="width:100%; padding:14px; background:#00d4b1; color:#080f1e; font-weight:700; font-size:16px; border:none; border-radius:12px; cursor:pointer;">
+      Connect →
+    </button>
+    <p style="color:rgba(255,255,255,0.3); font-size:12px; margin-top:16px;">Need a token? <a href="https://github.com/settings/tokens" target="_blank" style="color:#00d4b1;">github.com/settings/tokens</a><br>Required scopes: <code style="color:#4a9eff;">repo</code></p>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="avatar-wrap">
+      <div class="avatar">I</div>
+      <div class="live-badge"></div>
+    </div>
+    <div class="header-name">Ismael Sudally</div>
+    <div class="header-id">GITHUB HQ</div>
+    <div class="header-tags">
+      <span class="tag">AI &amp; AUTOMATION</span>
+      <span class="tag">ARIE FINANCE</span>
+      <span class="tag">BY ISMAEL</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num" id="s-repos" style="color:var(--teal)">—</div>
+      <div class="stat-lbl">Active</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="s-prs" style="color:var(--blue)">—</div>
+      <div class="stat-lbl">Open PRs</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="s-issues">—</div>
+      <div class="stat-lbl">Issues</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="s-today" style="color:var(--teal)">—</div>
+      <div class="stat-lbl">Today</div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div id="alerts"></div>
+
+  <!-- Arie Finance -->
+  <div class="section-head">
+    <div class="section-line"></div>
+    <div class="section-tag">Arie Finance</div>
+    <div class="section-line"></div>
+  </div>
+  <div id="arie-repos">
+    <div class="skeleton"><div class="skel-line" style="width:60%"></div><div class="skel-line" style="width:90%"></div><div class="skel-line" style="width:40%"></div></div>
+    <div class="skeleton"><div class="skel-line" style="width:50%"></div><div class="skel-line" style="width:80%"></div><div class="skel-line" style="width:35%"></div></div>
+  </div>
+
+  <!-- By Ismael -->
+  <div class="section-head">
+    <div class="section-line"></div>
+    <div class="section-tag">By Ismael</div>
+    <div class="section-line"></div>
+  </div>
+  <div id="byismael-repos">
+    <div class="skeleton"><div class="skel-line" style="width:55%"></div><div class="skel-line" style="width:85%"></div><div class="skel-line" style="width:45%"></div></div>
+    <div class="skeleton"><div class="skel-line" style="width:65%"></div><div class="skel-line" style="width:75%"></div><div class="skel-line" style="width:30%"></div></div>
+  </div>
+
+</div>
+
+<!-- Bottom nav -->
+<div class="bottom-nav">
+  <div class="nav-item active">
+    <div class="nav-icon">⌂</div>
+    <div>Dashboard</div>
+    <div class="nav-dot"></div>
+  </div>
+  <div class="nav-item" onclick="window.open('https://github.com/ismaelloveexcel?tab=repositories','_blank')">
+    <div class="nav-icon">⊞</div>
+    <div>Repos</div>
+  </div>
+  <div class="nav-item" onclick="window.open('https://github.com/pulls','_blank')">
+    <div class="nav-icon">⟳</div>
+    <div>PRs</div>
+  </div>
+  <div class="nav-item" onclick="window.open('https://github.com/issues','_blank')">
+    <div class="nav-icon">◎</div>
+    <div>Issues</div>
+  </div>
+  <div class="nav-item" onclick="window.open('https://github.com/ismaelloveexcel','_blank')">
+    <div class="nav-icon">◉</div>
+    <div>Profile</div>
+  </div>
+</div>
+
+<script>
+const USER = 'ismaelloveexcel';
+let PAT = localStorage.getItem('gh_pat') || '';
+let H = PAT ? { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' } : { 'Accept': 'application/vnd.github.v3+json' };
+
+function saveToken(t) {
+  PAT = t.trim();
+  localStorage.setItem('gh_pat', PAT);
+  H = { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' };
+  document.getElementById('token-gate').style.display = 'none';
+  init();
+}
+
+const CONFIG = {
+  arie: [
+    { name: 'ops-intelligence-hub', desc: 'AI-powered operations intelligence portal for Arie Finance', priority: true },
+    { name: 'people-ops-platform', desc: 'Internal people ops and HR platform for the team' },
+    { name: 'onboarda-backup', desc: 'White-label compliance & client onboarding platform — FSC Licensed, Mauritius' }
+  ],
+  byismael: [
+    { name: 'thewanderingdodo', desc: 'Premium cinematic web-app experience factory', priority: true },
+    { name: 'dyad-reworked', desc: 'Local open-source AI app builder — your own v0 / Lovable / Bolt alternative' }
+  ]
+};
+
+function langBadge(lang) {
+  if (!lang) return '<span class="lang-badge lang-none">No code yet</span>';
+  if (lang === 'TypeScript') return '<span class="lang-badge lang-ts">TypeScript</span>';
+  if (lang === 'JavaScript') return '<span class="lang-badge lang-js">JavaScript</span>';
+  if (lang === 'Python') return '<span class="lang-badge lang-py">Python</span>';
+  return `<span class="lang-badge lang-none">${lang}</span>`;
+}
+
+function daysAgo(d) {
+  const n = Math.floor((Date.now() - new Date(d)) / 86400000);
+  if (n === 0) return 'today';
+  if (n === 1) return 'yesterday';
+  if (n < 7) return `${n} days ago`;
+  if (n < 30) return `${Math.floor(n/7)}w ago`;
+  return `${Math.floor(n/30)}mo ago`;
+}
+
+function dotClass(d) {
+  const n = Math.floor((Date.now() - new Date(d)) / 86400000);
+  if (n <= 1) return 'dot-green';
+  if (n <= 7) return 'dot-amber';
+  return 'dot-gray';
+}
+
+function card(repo, prs, issues, cfg) {
+  const vis = repo.private
+    ? '<span class="vis-pill vis-private">PRIVATE</span>'
+    : '<span class="vis-pill vis-public">PUBLIC</span>';
+  const prBadge = prs > 0 ? `<span style="color:var(--blue)">${prs} PR${prs>1?'s':''}</span>` : '';
+  const issueBadge = issues > 0 ? `<span>${issues} issue${issues>1?'s':''}</span>` : '';
+  const url = repo.html_url;
+  return `
+    <div class="repo-card${cfg.priority ? ' active-project' : ''}" onclick="window.open('${url}','_blank')">
+      <div class="card-top">
+        <div>
+          <div class="card-name">${repo.name}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${vis}
+          ${langBadge(repo.language)}
+        </div>
+      </div>
+      <div class="card-desc">${cfg.desc}</div>
+      <div class="card-meta">
+        <span><span class="meta-dot ${dotClass(repo.pushed_at)}"></span>Pushed ${daysAgo(repo.pushed_at)}</span>
+        ${prBadge}${issueBadge}
+      </div>
+      <div class="card-actions">
+        <div class="btn btn-primary" onclick="event.stopPropagation();window.open('${url}','_blank')">Open</div>
+        <div class="btn" onclick="event.stopPropagation();window.open('${url}/issues','_blank')">Issues</div>
+        <div class="btn" onclick="event.stopPropagation();window.open('${url}/pulls','_blank')">PRs</div>
+        <div class="btn" onclick="event.stopPropagation();window.open('${url}/actions','_blank')">Actions</div>
+      </div>
+    </div>`;
+}
+
+async function fetchRepo(name) {
+  const [repo, prs, issuesRaw] = await Promise.all([
+    fetch(`https://api.github.com/repos/${USER}/${name}`, {headers: H}).then(r => r.json()),
+    fetch(`https://api.github.com/repos/${USER}/${name}/pulls?state=open&per_page=10`, {headers: H}).then(r => r.json()).then(d => Array.isArray(d) ? d.length : 0
