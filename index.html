@@ -244,26 +244,26 @@ label{font-size:12px;font-weight:700;color:var(--text-secondary);display:block;m
 
 <!-- Bottom Nav -->
 <div class="bottom-nav">
-  <div class="nav-item active" onclick="scrollToTop()">
+  <div class="nav-item active" id="nav-home" onclick="setTab('all');scrollToTop();setNav('nav-home')">
     <div class="nav-icon">⌂</div>
-    <div>Dashboard</div>
+    <div>Home</div>
     <div class="nav-dot"></div>
   </div>
-  <div class="nav-item" onclick="window.open('https://github.com/ismaelloveexcel?tab=repositories','_blank')">
-    <div class="nav-icon">⊞</div>
-    <div>Repos</div>
+  <div class="nav-item" id="nav-arie" onclick="setTab('arie');scrollToTop();setNav('nav-arie')">
+    <div class="nav-icon">💼</div>
+    <div>Arie</div>
   </div>
-  <div class="nav-item" onclick="window.open('https://github.com/pulls','_blank')">
-    <div class="nav-icon">⟳</div>
-    <div>PRs</div>
+  <div class="nav-item" id="nav-ismael" onclick="setTab('ismael');scrollToTop();setNav('nav-ismael')">
+    <div class="nav-icon">🚀</div>
+    <div>By Ismael</div>
   </div>
-  <div class="nav-item" onclick="window.open('https://github.com/issues','_blank')">
-    <div class="nav-icon">◎</div>
-    <div>Issues</div>
+  <div class="nav-item" id="nav-activity" onclick="setTab('all');scrollToFeed();setNav('nav-activity')">
+    <div class="nav-icon">⚡</div>
+    <div>Activity</div>
   </div>
-  <div class="nav-item" onclick="window.open('https://github.com/ismaelloveexcel','_blank')">
-    <div class="nav-icon">◉</div>
-    <div>Profile</div>
+  <div class="nav-item" id="nav-task" onclick="openModal()">
+    <div class="nav-icon">＋</div>
+    <div>Add Task</div>
   </div>
 </div>
 
@@ -280,4 +280,4 @@ const CONFIG = {
   ],
   byismael: [
     { name: 'thewanderingdodo', desc: 'Premium cinematic web-app experience factory', priority: true },
-    { name: 'dyad-reworked', desc: 'Your own local AI a
+    { name:
