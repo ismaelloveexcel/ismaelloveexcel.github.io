@@ -6,10 +6,10 @@
 <title>Ismael — GitHub HQ</title>
 <style>
 :root {
-  --bg: #f0f5ff;
-  --glass: rgba(255,255,255,0.72);
-  --glass-hover: rgba(255,255,255,0.92);
-  --glass-border: rgba(147,197,253,0.35);
+  --bg: #ffffff;
+  --glass: rgba(14, 30, 72, 0.91);
+  --glass-hover: rgba(18, 38, 88, 0.96);
+  --glass-border: rgba(80, 130, 255, 0.18);
   --teal: #0abf9f;
   --blue: #3b82f6;
   --blue-soft: rgba(59,130,246,0.1);
@@ -22,6 +22,27 @@
   --radius: 20px;
   --radius-sm: 12px;
 }
+/* Dark glass card text overrides */
+.repo-card .card-name { color: #fff; }
+.repo-card .card-desc { color: rgba(255,255,255,0.6); }
+.repo-card .card-meta { color: rgba(255,255,255,0.4); }
+.repo-card .health-good { background: rgba(16,185,129,0.18); color: #6ee7b7; }
+.repo-card .health-warn { background: rgba(245,158,11,0.18); color: #fcd34d; }
+.repo-card .health-bad  { background: rgba(239,68,68,0.18);  color: #fca5a5; }
+.repo-card .badge-pub  { background: rgba(16,185,129,0.18); color: #6ee7b7; border-color: rgba(16,185,129,0.25); }
+.repo-card .badge-priv { background: rgba(245,158,11,0.18); color: #fcd34d; border-color: rgba(245,158,11,0.25); }
+.repo-card .badge-ts   { background: rgba(96,165,250,0.18); color: #93c5fd; border-color: rgba(96,165,250,0.25); }
+.repo-card .badge-js   { background: rgba(234,179,8,0.18);  color: #fde68a; border-color: rgba(234,179,8,0.25);  }
+.repo-card .badge-none { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-color: rgba(255,255,255,0.1); }
+.repo-card .meta-dot.dot-green { background: #34d399; }
+.repo-card .meta-dot.dot-amber { background: #fbbf24; }
+.repo-card .meta-dot.dot-gray  { background: rgba(255,255,255,0.25); }
+/* Feed card */
+.feed-card { background: var(--glass); border-color: var(--glass-border); }
+.feed-card .feed-title { color: #fff; }
+.feed-card .feed-meta  { color: rgba(255,255,255,0.4); }
+.feed-icon { background: rgba(255,255,255,0.08); }
+.feed-repo { background: rgba(59,130,246,0.2); color: #93c5fd; }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;}
 
@@ -137,6 +158,7 @@ label{font-size:12px;font-weight:700;color:var(--text-secondary);display:block;m
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:600;color:var(--text-muted);cursor:pointer;padding:4px 10px;border-radius:12px;transition:all 0.2s;min-width:58px;}
 .nav-item.active{color:var(--blue);}
 .nav-icon{font-size:21px;line-height:1;}
+.nav-item svg{display:block;margin:0 auto;}
 .nav-dot{width:4px;height:4px;background:var(--blue);border-radius:50%;margin-top:1px;}
 
 /* FAB */
@@ -244,40 +266,4 @@ label{font-size:12px;font-weight:700;color:var(--text-secondary);display:block;m
 
 <!-- Bottom Nav -->
 <div class="bottom-nav">
-  <div class="nav-item active" id="nav-home" onclick="setTab('all');scrollToTop();setNav('nav-home')">
-    <div class="nav-icon">⌂</div>
-    <div>Home</div>
-    <div class="nav-dot"></div>
-  </div>
-  <div class="nav-item" id="nav-arie" onclick="setTab('arie');scrollToTop();setNav('nav-arie')">
-    <div class="nav-icon">💼</div>
-    <div>Arie</div>
-  </div>
-  <div class="nav-item" id="nav-ismael" onclick="setTab('ismael');scrollToTop();setNav('nav-ismael')">
-    <div class="nav-icon">🚀</div>
-    <div>By Ismael</div>
-  </div>
-  <div class="nav-item" id="nav-activity" onclick="setTab('all');scrollToFeed();setNav('nav-activity')">
-    <div class="nav-icon">⚡</div>
-    <div>Activity</div>
-  </div>
-  <div class="nav-item" id="nav-task" onclick="openModal()">
-    <div class="nav-icon">＋</div>
-    <div>Add Task</div>
-  </div>
-</div>
-
-<script>
-const USER = 'ismaelloveexcel';
-const PAT = ['gh','p_ysfhbbMrYRc1rLFbd','qGXXLlE5WHDGP2alUHe'].join('');
-const H = { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' };
-
-const CONFIG = {
-  arie: [
-    { name: 'ops-intelligence-hub', desc: 'AI-powered operations intelligence portal for Arie Finance', priority: true },
-    { name: 'people-ops-platform', desc: 'Internal people & HR management platform for the team' },
-    { name: 'onboarda-backup', desc: 'White-label compliance & client onboarding — FSC Licensed, Mauritius' }
-  ],
-  byismael: [
-    { name: 'thewanderingdodo', desc: 'Premium cinematic web-app experience factory', priority: true },
-    { name:
+ 
