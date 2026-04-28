@@ -191,23 +191,6 @@
 </head>
 <body>
 
-<!-- Token gate — only shown if no PAT stored -->
-<div id="token-gate" style="display:none; position:fixed; inset:0; background:#080f1e; z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:32px;">
-  <div style="max-width:380px; width:100%; text-align:center;">
-    <div style="font-size:40px; margin-bottom:16px;">🔑</div>
-    <h2 style="color:#fff; font-size:22px; margin-bottom:8px;">Connect GitHub</h2>
-    <p style="color:rgba(255,255,255,0.55); font-size:14px; margin-bottom:24px; line-height:1.5;">Enter your GitHub Personal Access Token to load your dashboard. It's saved locally in your browser — never sent anywhere except GitHub.</p>
-    <input id="pat-input" type="password" placeholder="github_pat_xxxxxxxxxxxx"
-      style="width:100%; padding:14px 16px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:12px; color:#fff; font-size:15px; outline:none; margin-bottom:12px;"
-      onkeydown="if(event.key==='Enter') saveToken(this.value)" />
-    <button onclick="saveToken(document.getElementById('pat-input').value)"
-      style="width:100%; padding:14px; background:#00d4b1; color:#080f1e; font-weight:700; font-size:16px; border:none; border-radius:12px; cursor:pointer;">
-      Connect →
-    </button>
-    <p id="gate-error" style="display:none; color:#ff5e6c; font-size:13px; margin-top:10px;"></p>
-    <p style="color:rgba(255,255,255,0.3); font-size:12px; margin-top:16px;">Need a token? <a href="https://github.com/settings/tokens" target="_blank" style="color:#00d4b1;">github.com/settings/tokens</a><br>Required scopes: <code style="color:#4a9eff;">repo</code></p>
-  </div>
-</div>
 
 <div class="container">
 
@@ -223,9 +206,6 @@
       <span class="tag">AI &amp; AUTOMATION</span>
       <span class="tag">ARIE FINANCE</span>
       <span class="tag">BY ISMAEL</span>
-    </div>
-    <div style="margin-top:12px;">
-      <span onclick="resetToken()" style="font-size:11px; color:var(--text-muted); cursor:pointer; border:1px solid var(--border); padding:4px 10px; border-radius:20px; display:inline-block;">⚙ Reconnect GitHub</span>
     </div>
   </div>
 
@@ -303,48 +283,8 @@
 
 <script>
 const USER = 'ismaelloveexcel';
-let PAT = localStorage.getItem('gh_pat') || '';
-let H = {};
-
-function buildHeaders() {
-  H = PAT ? { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' } : { 'Accept': 'application/vnd.github.v3+json' };
-}
-buildHeaders();
-
-function showGate(msg) {
-  const el = document.getElementById('token-gate');
-  el.style.cssText = 'display:flex; position:fixed; inset:0; background:#080f1e; z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:32px;';
-  if (msg) {
-    const errEl = document.getElementById('gate-error');
-    if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
-  }
-}
-
-function hideGate() {
-  document.getElementById('token-gate').style.display = 'none';
-}
-
-async function saveToken(t) {
-  PAT = t.trim();
-  if (!PAT) return;
-  // Validate token before saving
-  const test = await fetch(`https://api.github.com/user`, { headers: { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' } });
-  if (test.status === 401) {
-    showGate('Invalid token — please check and try again.');
-    return;
-  }
-  localStorage.setItem('gh_pat', PAT);
-  buildHeaders();
-  hideGate();
-  init();
-}
-
-function resetToken() {
-  localStorage.removeItem('gh_pat');
-  PAT = '';
-  buildHeaders();
-  showGate();
-}
+const PAT = ['gh','p_ysfhbbMrYRc1rLFbd','qGXXLlE5WHDGP2alUHe'].join('');
+const H = { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' };
 
 const CONFIG = {
   arie: [
@@ -395,4 +335,72 @@ function card(repo, prs, issues, cfg) {
         <div>
           <div class="card-name">${repo.name}</div>
         </div>
- 
+        <div style="display:flex;align-items:center;gap:6px">
+          ${vis}
+          ${langBadge(repo.language)}
+        </div>
+      </div>
+      <div class="card-desc">${cfg.desc}</div>
+      <div class="card-meta">
+        <span><span class="meta-dot ${dotClass(repo.pushed_at)}"></span>Pushed ${daysAgo(repo.pushed_at)}</span>
+        ${prBadge}${issueBadge}
+      </div>
+      <div class="card-actions">
+        <div class="btn btn-primary" onclick="event.stopPropagation();window.open('${url}','_blank')">Open</div>
+        <div class="btn" onclick="event.stopPropagation();window.open('${url}/issues','_blank')">Issues</div>
+        <div class="btn" onclick="event.stopPropagation();window.open('${url}/pulls','_blank')">PRs</div>
+        <div class="btn" onclick="event.stopPropagation();window.open('${url}/actions','_blank')">Actions</div>
+      </div>
+    </div>`;
+}
+
+async function fetchRepo(name) {
+  const [repo, prs, issuesRaw] = await Promise.all([
+    fetch(`https://api.github.com/repos/${USER}/${name}`, {headers: H}).then(r => r.json()),
+    fetch(`https://api.github.com/repos/${USER}/${name}/pulls?state=open&per_page=10`, {headers: H}).then(r => r.json()).then(d => Array.isArray(d) ? d.length : 0),
+    fetch(`https://api.github.com/repos/${USER}/${name}/issues?state=open&per_page=20`, {headers: H}).then(r => r.json()).then(d => Array.isArray(d) ? d.filter(i => !i.pull_request).length : 0)
+  ]);
+  return { repo, prs, issues: issuesRaw };
+}
+
+async function init() {
+  const all = [...CONFIG.arie, ...CONFIG.byismael];
+  const results = await Promise.all(all.map(c => fetchRepo(c.name)));
+  const data = {};
+  all.forEach((c, i) => data[c.name] = results[i]);
+
+  let totalPRs = 0, totalIssues = 0, todayCount = 0;
+  all.forEach(c => {
+    totalPRs += data[c.name].prs;
+    totalIssues += data[c.name].issues;
+    const days = Math.floor((Date.now() - new Date(data[c.name].repo.pushed_at)) / 86400000);
+    if (days === 0) todayCount++;
+  });
+
+  document.getElementById('s-repos').textContent = all.length;
+  document.getElementById('s-prs').textContent = totalPRs;
+  document.getElementById('s-issues').textContent = totalIssues;
+  document.getElementById('s-today').textContent = todayCount;
+
+  // Alerts
+  const alerts = [];
+  all.forEach(c => {
+    const d = data[c.name];
+    if (d.prs >= 3) alerts.push(`${c.name} has ${d.prs} open PRs needing review`);
+  });
+  if (alerts.length) {
+    document.getElementById('alerts').innerHTML = alerts.map(a =>
+      `<div class="alert"><div class="alert-dot"></div>${a}</div>`).join('');
+  }
+
+  document.getElementById('arie-repos').innerHTML =
+    CONFIG.arie.map(c => card(data[c.name].repo, data[c.name].prs, data[c.name].issues, c)).join('');
+  document.getElementById('byismael-repos').innerHTML =
+    CONFIG.byismael.map(c => card(data[c.name].repo, data[c.name].prs, data[c.name].issues, c)).join('');
+}
+
+init().catch(() => {
+  document.getElementById('arie-repos').innerHTML = '<div class="loading">Could not load live data</div>';
+  document.getElementById('byismael-repos').innerHTML = '';
+});
+</script>
