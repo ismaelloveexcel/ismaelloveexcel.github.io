@@ -6,21 +6,21 @@
 <title>Ismael — GitHub HQ</title>
 <style>
   :root {
-    --bg: #080f1e;
-    --surface: rgba(255,255,255,0.05);
-    --surface-hover: rgba(255,255,255,0.08);
-    --border: rgba(255,255,255,0.08);
-    --border-accent: rgba(0,212,177,0.4);
+    --bg: #0d1829;
+    --surface: rgba(255,255,255,0.08);
+    --surface-hover: rgba(255,255,255,0.12);
+    --border: rgba(255,255,255,0.12);
+    --border-accent: rgba(0,212,177,0.5);
     --teal: #00d4b1;
-    --teal-dim: rgba(0,212,177,0.15);
-    --teal-glow: rgba(0,212,177,0.25);
-    --blue: #4a9eff;
-    --blue-dim: rgba(74,158,255,0.15);
-    --text: #ffffff;
-    --text-secondary: rgba(255,255,255,0.55);
-    --text-muted: rgba(255,255,255,0.3);
-    --danger: #ff5e6c;
-    --warn: #ffb347;
+    --teal-dim: rgba(0,212,177,0.2);
+    --teal-glow: rgba(0,212,177,0.3);
+    --blue: #5aabff;
+    --blue-dim: rgba(90,171,255,0.18);
+    --text: #f0f4ff;
+    --text-secondary: rgba(240,244,255,0.65);
+    --text-muted: rgba(240,244,255,0.4);
+    --danger: #ff6b7a;
+    --warn: #ffc166;
     --success: #00d4b1;
     --radius: 20px;
     --radius-sm: 12px;
@@ -33,7 +33,7 @@
     content: '';
     position: fixed;
     width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(0,212,177,0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0,212,177,0.14) 0%, transparent 70%);
     top: -200px; right: -200px;
     pointer-events: none;
   }
@@ -41,7 +41,7 @@
     content: '';
     position: fixed;
     width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(74,158,255,0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(74,158,255,0.12) 0%, transparent 70%);
     bottom: -100px; left: -100px;
     pointer-events: none;
   }
@@ -204,6 +204,7 @@
       style="width:100%; padding:14px; background:#00d4b1; color:#080f1e; font-weight:700; font-size:16px; border:none; border-radius:12px; cursor:pointer;">
       Connect →
     </button>
+    <p id="gate-error" style="display:none; color:#ff5e6c; font-size:13px; margin-top:10px;"></p>
     <p style="color:rgba(255,255,255,0.3); font-size:12px; margin-top:16px;">Need a token? <a href="https://github.com/settings/tokens" target="_blank" style="color:#00d4b1;">github.com/settings/tokens</a><br>Required scopes: <code style="color:#4a9eff;">repo</code></p>
   </div>
 </div>
@@ -222,6 +223,9 @@
       <span class="tag">AI &amp; AUTOMATION</span>
       <span class="tag">ARIE FINANCE</span>
       <span class="tag">BY ISMAEL</span>
+    </div>
+    <div style="margin-top:12px;">
+      <span onclick="resetToken()" style="font-size:11px; color:var(--text-muted); cursor:pointer; border:1px solid var(--border); padding:4px 10px; border-radius:20px; display:inline-block;">⚙ Reconnect GitHub</span>
     </div>
   </div>
 
@@ -300,14 +304,46 @@
 <script>
 const USER = 'ismaelloveexcel';
 let PAT = localStorage.getItem('gh_pat') || '';
-let H = PAT ? { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' } : { 'Accept': 'application/vnd.github.v3+json' };
+let H = {};
 
-function saveToken(t) {
-  PAT = t.trim();
-  localStorage.setItem('gh_pat', PAT);
-  H = { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' };
+function buildHeaders() {
+  H = PAT ? { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' } : { 'Accept': 'application/vnd.github.v3+json' };
+}
+buildHeaders();
+
+function showGate(msg) {
+  const el = document.getElementById('token-gate');
+  el.style.cssText = 'display:flex; position:fixed; inset:0; background:#080f1e; z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:32px;';
+  if (msg) {
+    const errEl = document.getElementById('gate-error');
+    if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
+  }
+}
+
+function hideGate() {
   document.getElementById('token-gate').style.display = 'none';
+}
+
+async function saveToken(t) {
+  PAT = t.trim();
+  if (!PAT) return;
+  // Validate token before saving
+  const test = await fetch(`https://api.github.com/user`, { headers: { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' } });
+  if (test.status === 401) {
+    showGate('Invalid token — please check and try again.');
+    return;
+  }
+  localStorage.setItem('gh_pat', PAT);
+  buildHeaders();
+  hideGate();
   init();
+}
+
+function resetToken() {
+  localStorage.removeItem('gh_pat');
+  PAT = '';
+  buildHeaders();
+  showGate();
 }
 
 const CONFIG = {
@@ -359,26 +395,4 @@ function card(repo, prs, issues, cfg) {
         <div>
           <div class="card-name">${repo.name}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:6px">
-          ${vis}
-          ${langBadge(repo.language)}
-        </div>
-      </div>
-      <div class="card-desc">${cfg.desc}</div>
-      <div class="card-meta">
-        <span><span class="meta-dot ${dotClass(repo.pushed_at)}"></span>Pushed ${daysAgo(repo.pushed_at)}</span>
-        ${prBadge}${issueBadge}
-      </div>
-      <div class="card-actions">
-        <div class="btn btn-primary" onclick="event.stopPropagation();window.open('${url}','_blank')">Open</div>
-        <div class="btn" onclick="event.stopPropagation();window.open('${url}/issues','_blank')">Issues</div>
-        <div class="btn" onclick="event.stopPropagation();window.open('${url}/pulls','_blank')">PRs</div>
-        <div class="btn" onclick="event.stopPropagation();window.open('${url}/actions','_blank')">Actions</div>
-      </div>
-    </div>`;
-}
-
-async function fetchRepo(name) {
-  const [repo, prs, issuesRaw] = await Promise.all([
-    fetch(`https://api.github.com/repos/${USER}/${name}`, {headers: H}).then(r => r.json()),
-    fetch(`https://api.github.com/repos/${USER}/${name}/pulls?state=open&per_page=10`, {headers: H}).then(r => r.json()).then(d => Array.isArray(d) ? d.length : 0
+ 
