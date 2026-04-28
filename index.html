@@ -210,26 +210,19 @@ label{font-size:12px;font-weight:700;color:var(--text-secondary);display:block;m
   <!-- Arie Finance -->
   <div class="section" id="section-arie">
     <div class="section-label">ARIE FINANCE</div>
-    <div id="arie-repos">
-      <div class="repo-card"><div class="skel skeleton" style="width:60%;height:16px;margin-bottom:8px;"></div><div class="skel skeleton w80" style="width:80%;"></div><div class="skel skeleton" style="width:40%;margin-top:14px;height:12px;"></div></div>
-      <div class="repo-card"><div class="skel skeleton" style="width:55%;height:16px;margin-bottom:8px;"></div><div class="skel skeleton" style="width:75%;"></div></div>
-    </div>
+    <div id="arie-repos" style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">Loading…</div>
   </div>
 
   <!-- By Ismael -->
   <div class="section" id="section-ismael">
     <div class="section-label">BY ISMAEL</div>
-    <div id="byismael-repos">
-      <div class="repo-card"><div class="skel skeleton" style="width:65%;height:16px;margin-bottom:8px;"></div><div class="skel skeleton" style="width:80%;"></div></div>
-    </div>
+    <div id="byismael-repos" style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">Loading…</div>
   </div>
 
   <!-- Activity Feed -->
   <div class="section" id="section-feed">
     <div class="section-label">RECENT ACTIVITY</div>
-    <div class="feed-card" id="feed-list">
-      <div class="feed-item"><div class="feed-icon">⏳</div><div class="feed-body"><div class="feed-title">Loading activity...</div></div></div>
-    </div>
+    <div class="feed-card" id="feed-list" style="text-align:center;padding:24px;color:rgba(255,255,255,0.4);font-size:13px;">Loading…</div>
   </div>
 
 </div>
@@ -264,4 +257,11 @@ label{font-size:12px;font-weight:700;color:var(--text-secondary);display:block;m
   </div>
 </div>
 
-<!-- Bottom Nav 
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="setTab('all');scrollToTop();setNav('nav-home')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
+    <div>Home</div>
+    <div class="nav-dot"></div>
+  </div>
+  <div class="nav-item" id=
